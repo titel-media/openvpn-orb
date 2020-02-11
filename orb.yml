@@ -1,0 +1,63 @@
+version: 2.1
+description: OpenVPN client Orb
+
+executors:
+  default:
+    description: |
+      "Tested only on the CircleCI machine executor, but should work
+      on most debian/ubuntu based images as well"
+    machine: true
+
+commands:
+  install:
+    description: "Install OpenVPN client"
+    steps:
+      - run:
+          name: Install OpenVPN
+          command: sudo apt-get install --upgrade openvpn
+  connect:
+    description: "Connect to OpenVPN"
+    parameters:
+      config:
+        description: |
+          "ENV var name containing OpenVPN client config file content base64 encoded"
+        type: env_var_name
+        default: VPN_CONFIG
+    steps:
+      - run:
+          name: Init VPN
+          command: |
+            echo ${<<parameters.config>>:?} | base64 --decode >> config.ovpn
+      - run:
+          name: Connect to VPN
+          command: |
+            sudo openvpn --config config.ovpn > openvpn.log 2>&1 &
+            sudo /bin/bash -c 'echo "nameserver 10.255.0.2" > /run/resolvconf/resolv.conf'
+            while [ -n "$(ip addr show tun0 2>&1 > /dev/null)" ]; do
+              sleep 0.1;
+            done
+  disconnect:
+    description: "Disconnect from OpenVPN"
+    steps:
+      - run:
+          name: Disconnect from VPN
+          command: sudo killall openvpn || true
+      - run:
+          name: remove OpenVPN config
+          command: sudo rm config.ovpn
+
+example:
+  secure-ping:
+    description: "Establish VPN connection and execute a command within it"
+    usage:
+      version: 2.1
+      orbs:
+        vpn: titel-media/openvpn@0.0.1
+      jobs:
+        ping:
+          executor: vpn/default
+          steps:
+            - vpn/install
+            - vpn/connect
+            - run: ping -c 5 192.0.2.1
+            - vpn/disconnect
