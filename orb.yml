@@ -14,7 +14,12 @@ commands:
     steps:
       - run:
           name: Install OpenVPN
-          command: sudo aptitude install openvpn
+          command: |
+            # There seems to be a bug with the openvpn aptrepo sources
+            sudo apt-get update # for apt-get to recognise openvpn
+            sudo apt-get remove openvpn # remove ubuntu aptrepo source
+            sudo apt-get update
+            sudo apt-get install openvpn -y
   connect:
     description: "Connect to OpenVPN"
     parameters:
