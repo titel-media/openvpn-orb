@@ -33,6 +33,9 @@ We welcome [issues](https://github.com/titel-media/openvpn-orb/issues) to and [p
 
 ### Publishing
 
-New versions of this orb are published by pushing a SemVer git tag by the Community & Partner Engineering Team.
+New versions of this orb are published by creating a new [release][] with a [SemVer][] tag by the Community & Partner Engineering Team.
+Afterwards the actual publishing is being executed by the [CI](./.circleci/config.yml)
 
 [reg-page]: https://circleci.com/orbs/registry/orb/titel-media/openvpn
+[release]: https://github.com/titel-media/openvpn-orb/releases/new
+[SemVer]: https://semver.org
