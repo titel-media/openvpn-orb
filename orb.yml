@@ -14,7 +14,7 @@ commands:
     steps:
       - run:
           name: Install OpenVPN
-          command: sudo apt-get install --upgrade openvpn
+          command: sudo aptitude install openvpn
   connect:
     description: "Connect to OpenVPN"
     parameters:
