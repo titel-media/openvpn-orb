@@ -25,19 +25,24 @@ commands:
     parameters:
       config:
         description: |
-          "ENV var name containing OpenVPN client config file content base64 encoded"
+          "ENV var name containing OpenVPN client .ovpn config file content base64 encoded"
         type: env_var_name
         default: VPN_CONFIG
+      login:
+        description: |
+          "ENV var name containing OpenVPN newline separated username and password base64 encoded"
+        type: env_var_name
+        default: VPN_LOGIN
     steps:
       - run:
           name: Init VPN
           command: |
             echo ${<<parameters.config>>:?} | base64 --decode >> config.ovpn
+            echo ${<<parameters.login>>:?} | base64 --decode >> vpn.login
       - run:
           name: Connect to VPN
           command: |
-            sudo openvpn --config config.ovpn > openvpn.log 2>&1 &
-            sudo /bin/bash -c 'echo "nameserver 10.255.0.2" > /run/resolvconf/resolv.conf'
+            sudo openvpn --config config.ovpn --auth-user-pass vpn.login > openvpn.log 2>&1 &
             while [ -n "$(ip addr show tun0 2>&1 > /dev/null)" ]; do
               sleep 0.1;
             done
