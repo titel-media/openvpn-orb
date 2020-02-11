@@ -11,7 +11,11 @@ The following environment variables need to be set in CircleCI either directly o
 
 - VPN_CONFIG
 
-Variable has to contain a Base64 encoded OpenVPN config file
+Variable has to contain a Base64 encoded OpenVPN config file eg. `.ovpn` format
+
+- VPN_LOGIN
+
+Variable has to contain a Base64 encoded username and password separated with a newline
 
 
 See [CircleCI Documentation](https://circleci.com/docs/2.0/env-vars) for instructions on how you would set this up.
